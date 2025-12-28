@@ -33,11 +33,12 @@ def astar(grid, start, goal):
             continue
         visited.add(current)
         x, y = current
-        # neighbors (4-connectivity)
-        for dx, dy in [(-1,0),(1,0),(0,-1),(0,1)]:
+        # neighbors (8-connectivity with diagonals)
+        for dx, dy in [(-1,0),(1,0),(0,-1),(0,1),(-1,-1),(-1,1),(1,-1),(1,1)]:
             nx, ny = x+dx, y+dy
+            cost = 1 if (dx == 0 or dy == 0) else np.sqrt(2)  # diagonal moves cost √2
             if 0<=nx<rows and 0<=ny<cols and grid[nx,ny]==0:
-                heappush(open_set, (g+1 + heuristic((nx,ny), goal), g+1, (nx,ny), path+[(nx,ny)]))
+                heappush(open_set, (g+cost + heuristic((nx,ny), goal), g+cost, (nx,ny), path+[(nx,ny)]))
     return None
 
 # --- Matplotlib interactive plot ---
