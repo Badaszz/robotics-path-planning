@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from heapq import heappush, heappop
 
-# --- Grid setup ---
+#  Grid setup 
 grid_size = (20, 20)
 grid = np.zeros(grid_size)
 
@@ -12,14 +12,18 @@ grid = np.zeros(grid_size)
 grid[5:10, 5] = 1
 grid[12, 8:15] = 1
 grid[3:8, 14] = 1
+grid[15:18, 2:8] = 1
+grid[8:12, 10:12] = 1
+grid[2:4, 10:18] = 1
+grid[18:20, 15:20] = 1
 
 start = (1, 2)  # fixed start point
 
-# --- A* algorithm ---
+#  A* algorithm 
 def heuristic(a, b):
-    return np.sqrt((a[0]-b[0])**2 + (a[1]-b[1])**2)
+    return np.sqrt((a[0]-b[0])**2 + (a[1]-b[1])**2) # Heuristic function for cost estimation (Euclidean distance)
 
-def astar(grid, start, goal):
+def a_star(grid, start, goal):
     rows, cols = grid.shape
     open_set = []
     heappush(open_set, (0 + heuristic(start, goal), 0, start, [start]))
@@ -41,7 +45,7 @@ def astar(grid, start, goal):
                 heappush(open_set, (g+cost + heuristic((nx,ny), goal), g+cost, (nx,ny), path+[(nx,ny)]))
     return None
 
-# --- Matplotlib interactive plot ---
+#  Matplotlib interactive plot 
 fig, ax = plt.subplots()
 ax.imshow(grid, cmap='Greys', origin='upper')
 
@@ -52,13 +56,16 @@ start_plot, = ax.plot(start[1], start[0], 'go', markersize=10)
 path_plot, = ax.plot([], [], 'r-', linewidth=2)
 
 def onclick(event):
-    if event.inaxes != ax:
+    global start
+    if event.inaxes != ax: # if click is outside the axes
         return
     goal = (int(round(event.ydata)), int(round(event.xdata)))
-    path = astar(grid, start, goal)
+    path = a_star(grid, start, goal)
     if path:
         px, py = zip(*path)
         path_plot.set_data(py, px)
+        start = goal  # update start point to the clicked location
+        start_plot.set_data([goal[1]], [goal[0]])  # update the visual marker
         fig.canvas.draw()
     else:
         print("No path found!")
