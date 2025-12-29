@@ -67,6 +67,7 @@ def onclick(event):
         start = goal  # update start point to the clicked location
         start_plot.set_data([goal[1]], [goal[0]])  # update the visual marker
         fig.canvas.draw()
+        fig.canvas.draw()
     else:
         print("No path found!")
 
