@@ -71,3 +71,7 @@ def onclick(event):
         fig.canvas.draw()
     else:
         print("No path found!")                
+
+fig.canvas.mpl_connect('button_press_event', onclick)
+plt.title("Click anywhere to plan path from green start point (Djikstra's Algorithm)")
+plt.show()
