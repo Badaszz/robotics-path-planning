@@ -26,23 +26,26 @@ def heuristic(a, b):
 def a_star(grid, start, goal):
     rows, cols = grid.shape
     open_set = []
-    heappush(open_set, (0 + heuristic(start, goal), 0, start, [start]))
-    visited = set()
+    heappush(open_set, (0 + heuristic(start, goal), 0, start, [start])) # add the currrnt path and its elements to the heap Open_set
+    visited = set() # create a set pf visited nodes, to prevent revisiing them
     
     while open_set:
-        f, g, current, path = heappop(open_set)
+        f, g, current, path = heappop(open_set) # remove top most element and puth its features in variables
         if current == goal:
+            # If currrent node is the goal node, return the path
             return path
         if current in visited:
+            # if we have visited this node, continue from the top
             continue
-        visited.add(current)
-        x, y = current
+        visited.add(current) # add the current node to the set of visited nodes
+        x, y = current # put the x and y coordinates of the current node in variables
         # neighbors (8-connectivity with diagonals)
         for dx, dy in [(-1,0),(1,0),(0,-1),(0,1),(-1,-1),(-1,1),(1,-1),(1,1)]:
-            nx, ny = x+dx, y+dy
-            cost = 1 if (dx == 0 or dy == 0) else np.sqrt(2)  # diagonal moves cost √2
-            if 0<=nx<rows and 0<=ny<cols and grid[nx,ny]==0:
-                heappush(open_set, (g+cost + heuristic((nx,ny), goal), g+cost, (nx,ny), path+[(nx,ny)]))
+            nx, ny = x+dx, y+dy # the new x and y coordinates based on available movements
+            cost = 1 if (dx == 0 or dy == 0) else np.sqrt(2)  # diagonal moves g_cost is √2 
+            if 0<=nx<rows and 0<=ny<cols and grid[nx,ny]==0 and (dx == 0 or dy == 0 or (grid[x+dx, y] == 0 and grid[x, y+dy] == 0)): # add another condition to avoid diagonal movements around edges
+                # if path is traversible, add to the open set
+                heappush(open_set, (g+cost + heuristic((nx,ny), goal), g+cost, (nx,ny), path+[(nx,ny)])) 
     return None
 
 #  Matplotlib interactive plot 
@@ -57,11 +60,13 @@ path_plot, = ax.plot([], [], 'r-', linewidth=2)
 
 def onclick(event):
     global start
-    if event.inaxes != ax: # if click is outside the axes
+    if event.inaxes != ax: 
+        # if click is outside the axes
         return
     goal = (int(round(event.ydata)), int(round(event.xdata)))
     path = a_star(grid, start, goal)
     if path:
+        # if traversible path is available, move to the goal using the path
         px, py = zip(*path)
         path_plot.set_data(py, px)
         start = goal  # update start point to the clicked location
@@ -74,3 +79,8 @@ def onclick(event):
 fig.canvas.mpl_connect('button_press_event', onclick)
 plt.title("Click anywhere to plan path from green start point")
 plt.show()
+
+### There are things that are not taken into account here
+### The cost of steering, this doesnt apply here because we are using a point
+### The fact that there might be some uknown regions neither 0 or 1. 
+### Local pah planning, whihc actually gives the controls for the movements
