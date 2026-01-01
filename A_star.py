@@ -38,7 +38,7 @@ def a_star(grid, start, goal):
     rows, cols = grid.shape
     open_set = []
     heappush(open_set, (0 + heuristic(start, goal, start, grid), 0, start, [start])) # add the currrnt path and its elements to the heap Open_set
-    visited = set() # create a set pf visited nodes, to prevent revisiing them
+    visited = set() # create a set pf visited nodes, to prevent revisiting them
     
     while open_set:
         f, g, current, path = heappop(open_set) # remove top most element and puth its features in variables
@@ -54,7 +54,7 @@ def a_star(grid, start, goal):
         for dx, dy in [(-1,0),(1,0),(0,-1),(0,1),(-1,-1),(-1,1),(1,-1),(1,1)]:
             nx, ny = x+dx, y+dy # the new x and y coordinates based on available movements
             cost = 1 if (dx == 0 or dy == 0) else np.sqrt(2)  # diagonal moves g_cost is √2 
-            if 0<=nx<rows and 0<=ny<cols and grid[nx,ny]!=1 and (dx == 0 or dy == 0 or (grid[x+dx, y] != 1 and grid[x, y+dy] != 1)): # add another condition to avoid diagonal movements around edges
+            if 0<=nx<rows and 0<=ny<cols and grid[nx,ny]!=1 and (dx == 0 or dy == 0 or (grid[x+dx, y] != 1 and grid[x, y+dy] != 1)): # add another condition to avoid diagonal movements through edges
                 # if path is traversible, add to the open set
                 heappush(open_set, (g+cost + heuristic((nx,ny), goal, (nx,ny), grid), g+cost, (nx,ny), path+[(nx,ny)])) 
     return None
