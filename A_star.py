@@ -17,16 +17,27 @@ grid[8:12, 10:12] = 1
 grid[2:4, 10:18] = 1
 grid[18:20, 15:20] = 1
 
+# Randomly set half of non-obstacle cells to 0.5 (ash)
+mask = (grid == 0)
+flat_indices = np.where(mask.flatten())[0]
+np.random.seed(42)  # for reproducibility
+rough_terrain = np.random.choice(flat_indices, size=len(flat_indices)//2, replace=False)
+grid.flat[rough_terrain] = 0.5
+
 start = (1, 2)  # fixed start point
 
 #  A* algorithm 
-def heuristic(a, b):
-    return np.sqrt((a[0]-b[0])**2 + (a[1]-b[1])**2) # Heuristic function for cost estimation (Euclidean distance)
+def heuristic(a, b, current_pos=None, grid_ref=None):
+    base_h = np.sqrt((a[0]-b[0])**2 + (a[1]-b[1])**2) # Heuristic function for cost estimation (Euclidean distance)
+    # Increase heuristic cost by 1/4 if current position is in rough terrain (0.5)
+    if current_pos is not None and grid_ref is not None and grid_ref[current_pos] == 0.5:
+        return base_h * 1.25
+    return base_h
 
 def a_star(grid, start, goal):
     rows, cols = grid.shape
     open_set = []
-    heappush(open_set, (0 + heuristic(start, goal), 0, start, [start])) # add the currrnt path and its elements to the heap Open_set
+    heappush(open_set, (0 + heuristic(start, goal, start, grid), 0, start, [start])) # add the currrnt path and its elements to the heap Open_set
     visited = set() # create a set pf visited nodes, to prevent revisiing them
     
     while open_set:
@@ -43,9 +54,9 @@ def a_star(grid, start, goal):
         for dx, dy in [(-1,0),(1,0),(0,-1),(0,1),(-1,-1),(-1,1),(1,-1),(1,1)]:
             nx, ny = x+dx, y+dy # the new x and y coordinates based on available movements
             cost = 1 if (dx == 0 or dy == 0) else np.sqrt(2)  # diagonal moves g_cost is √2 
-            if 0<=nx<rows and 0<=ny<cols and grid[nx,ny]==0 and (dx == 0 or dy == 0 or (grid[x+dx, y] == 0 and grid[x, y+dy] == 0)): # add another condition to avoid diagonal movements around edges
+            if 0<=nx<rows and 0<=ny<cols and grid[nx,ny]!=1 and (dx == 0 or dy == 0 or (grid[x+dx, y] != 1 and grid[x, y+dy] != 1)): # add another condition to avoid diagonal movements around edges
                 # if path is traversible, add to the open set
-                heappush(open_set, (g+cost + heuristic((nx,ny), goal), g+cost, (nx,ny), path+[(nx,ny)])) 
+                heappush(open_set, (g+cost + heuristic((nx,ny), goal, (nx,ny), grid), g+cost, (nx,ny), path+[(nx,ny)])) 
     return None
 
 #  Matplotlib interactive plot 
