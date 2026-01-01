@@ -1,0 +1,3 @@
+numpy>=1.21
+matplotlib>=3.3
+heapq2>=1.0.1
