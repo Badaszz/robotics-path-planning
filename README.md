@@ -41,7 +41,22 @@ From the repository root run:
 python A_star.py
 ```
 
-Controls / Interaction
+Algorithm Comparison
+
+Compare A* and Dijkstra side-by-side with path cost and node exploration metrics:
+
+```
+python comaprism.py
+```
+
+This script runs both algorithms on the same grid and visualizes:
+- **Dijkstra path** (blue line) — exhaustive search, explores more nodes
+- **A* path** (cyan dashed line) — heuristic-guided search, explores fewer nodes
+- **Statistics**: Path cost, nodes considered, and waypoint count for each algorithm
+
+Example Comparison
+
+![Comparison output](example_comparism.png)
 
 - Click anywhere on the plotted grid to set the goal. The algorithm will plan from the current start to the clicked cell.
 - The green marker is the current start; it is updated to the goal after a successful plan.
