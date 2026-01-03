@@ -19,7 +19,7 @@ grid[18:20, 15:20] = 1
 
 start = (0, 0)  # fixed start point
 
-def djikstra(grid, start, goal):
+def dijkstra(grid, start, goal):
     rows,cols = grid.shape
     open_set = []
     heappush(open_set, (0, start, [start])) # add the current path and its elements to the heap Open_set
@@ -60,7 +60,7 @@ def onclick(event):
         # if click is outside the axes
         return
     goal = (int(round(event.ydata)), int(round(event.xdata)))
-    path = djikstra(grid, start, goal)
+    path = dijkstra(grid, start, goal)
     if path:
         # if traversible path is available, move to the goal using the path
         px, py = zip(*path)
